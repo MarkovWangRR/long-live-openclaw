@@ -189,7 +189,16 @@ class OpenClawWatchdog:
                 return False, "JSON parse failed"
 
         # Check active sessions
-        active_sessions = status.get("active_sessions", -1)
+        # Try multiple possible field names for sessions
+        active_sessions = status.get("active_sessions")
+        if active_sessions is None:
+            # Try sessions.count or agents.totalSessions
+            sessions_data = status.get("sessions", {})
+            active_sessions = sessions_data.get("count", -1)
+        if active_sessions is None or active_sessions == -1:
+            agents_data = status.get("agents", {})
+            active_sessions = agents_data.get("totalSessions", -1)
+
         require_zero_sessions = business_config.get("require_zero_sessions", True)
 
         if require_zero_sessions and active_sessions > 0:
@@ -198,7 +207,11 @@ class OpenClawWatchdog:
             return False, msg
 
         # Check running tools
-        running_tools = status.get("running_tools", -1)
+        # Try multiple possible field names
+        running_tools = status.get("running_tools")
+        if running_tools is None:
+            running_tools = status.get("active_tools", -1)
+
         require_zero_tools = business_config.get("require_zero_tools", True)
 
         if require_zero_tools and running_tools > 0:
