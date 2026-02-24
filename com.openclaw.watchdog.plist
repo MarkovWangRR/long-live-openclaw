@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Service name -->
+    <key>Label</key>
+    <string>com.openclaw.watchdog</string>
+
+    <!-- Program path (modify based on actual installation location) -->
+    <!-- Note: Script runs in loop mode, without the once flag, to support grace period -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>python3</string>
+        <string>__SCRIPT_PATH__</string>
+    </array>
+
+    <!-- Working directory -->
+    <key>WorkingDirectory</key>
+    <string>__WORK_DIR__</string>
+
+    <!-- Check interval (seconds) -->
+    <!-- launchd will execute the program at this interval -->
+    <!-- Note: Set to 1 since script handles its own loop with check_interval -->
+    <key>StartInterval</key>
+    <integer>1</integer>
+
+    <!-- Start delay (seconds) -->
+    <key>StartDelay</key>
+    <integer>30</integer>
+
+    <!-- Standard output redirect -->
+    <key>StandardOutPath</key>
+    <string>/tmp/claw_watchdog.stdout.log</string>
+
+    <!-- Standard error redirect -->
+    <key>StandardErrorPath</key>
+    <string>/tmp/claw_watchdog.stderr.log</string>
+
+    <!-- Run time limit (seconds) -->
+    <!-- Prevent script from hanging, force exit -->
+    <key>TimeOut</key>
+    <integer>120</integer>
+
+    <!-- Exit timeout -->
+    <key>ExitTimeOut</key>
+    <integer>60</integer>
+
+    <!-- Auto restart on process death -->
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+
+    <!-- Environment variables -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/markovwong/.pyenv/shims:/Users/markovwong/.pyenv/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>
