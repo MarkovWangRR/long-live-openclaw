@@ -191,7 +191,7 @@ def get_default_config() -> Dict[str, Any]:
             "max_retries": 3,  # Maximum retry attempts
             "retry_delay": 10,  # Retry delay in seconds
             "cooldown": 300,  # Cooldown period in seconds (prevent frequent restarts)
-            "graceful_wait": 10  # Graceful restart wait time in seconds
+            "graceful_wait": 10  # Graceful restart wait time in seconds (default 10)
         },
 
         # ========== Logging Config ==========
