@@ -355,6 +355,18 @@ def create_config(force: bool = False) -> None:
 
     config = get_default_config()
 
+    # Prompt for check interval
+    print("\n--- Check Interval Configuration ---")
+    print(f"Current: {config['check_interval']} seconds (5 minutes)")
+    interval_input = input("Enter check interval in seconds (press Enter to keep default): ").strip()
+    if interval_input:
+        try:
+            config['check_interval'] = int(interval_input)
+            print(f"Set to: {config['check_interval']} seconds")
+        except ValueError:
+            print("Invalid input, using default: 300 seconds")
+            config['check_interval'] = 300
+
     # Prompt for log path
     log_path = prompt_log_path()
     config['io_silence']['log_path'] = log_path
