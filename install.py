@@ -295,8 +295,12 @@ def check_diagnostics_setting() -> Optional[str]:
     return "default"
 
 
-def create_config() -> None:
-    """Create configuration file"""
+def create_config(force: bool = False) -> None:
+    """Create configuration file
+
+    Args:
+        force: If True, force recreation of config without asking
+    """
     print("=" * 50)
     print("Step 1: Create Configuration File")
     print("=" * 50)
@@ -305,9 +309,49 @@ def create_config() -> None:
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     if CONFIG_PATH.exists():
-        print(f"Config file already exists: {CONFIG_PATH}")
-        print("Skipping config creation (use existing config)")
-        return
+        print(f"\nConfig file already exists: {CONFIG_PATH}")
+
+        # If force mode, just delete and recreate
+        if force:
+            print("Force mode: deleting existing config and creating new one...")
+            CONFIG_PATH.unlink()
+        else:
+            # Ask user what to do
+            print("\nOptions:")
+            print("  [1] Keep existing configuration (recommended)")
+            print("  [2] Delete and recreate with new settings")
+            print("  [3] View current configuration")
+
+            while True:
+                choice = input("\nPlease select [1/2/3] (default: 1): ").strip()
+
+                if choice == "" or choice == "1":
+                    print("Using existing configuration")
+                    return
+                elif choice == "2":
+                    print("Deleting existing config and recreating...")
+                    CONFIG_PATH.unlink()
+                    break
+                elif choice == "3":
+                    # Show current config
+                    try:
+                        with open(CONFIG_PATH, 'r') as f:
+                            import json
+                            config_data = json.load(f)
+                        print("\n" + "=" * 40)
+                        print("Current Configuration:")
+                        print("=" * 40)
+                        print(json.dumps(config_data, indent=2, ensure_ascii=False))
+                        print("=" * 40)
+                    except Exception as e:
+                        print(f"Error reading config: {e}")
+                    # Ask again after showing
+                    print("\nOptions:")
+                    print("  [1] Keep existing configuration")
+                    print("  [2] Delete and recreate with new settings")
+                    continue
+                else:
+                    print("Invalid input, please enter 1, 2, or 3")
 
     config = get_default_config()
 
@@ -650,6 +694,12 @@ Supported platforms:
         help="Skip config creation step"
     )
 
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force recreate configuration without asking (use with --skip-config to skip entirely)"
+    )
+
     args = parser.parse_args()
 
     # Check if script exists
@@ -665,7 +715,7 @@ Supported platforms:
 
     if args.action == "install":
         if not args.skip_config:
-            create_config()
+            create_config(force=args.force)
         deploy_service()
         start_service()
         print("\n" + "=" * 50)
